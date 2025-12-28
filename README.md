@@ -1,393 +1,519 @@
-﻿# SwasthiQ EMR - Appointment Management System
+﻿# 🏥 SwasthiQ EMR - Healthcare Appointment Management System
 
-A production-ready appointment management system built with FastAPI, GraphQL, Next.js, and TypeScript.
+> A modern, production-ready Electronic Medical Records (EMR) system built with Next.js 14, FastAPI, GraphQL, and TypeScript.
 
-## 🎯 Assignment Completion Status
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://swasthiq-emr-assignment.vercel.app/)
+[![Backend API](https://img.shields.io/badge/Backend-API-blue?style=for-the-badge&logo=railway)](https://swasthiq-emr-assignment-production.up.railway.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/Yashwanth2408/swasthiq-emr-assignment)
 
-All required features implemented:
-- ✅ 12+ mock appointments with complete data
-- ✅ Filtering by date, status, and doctorName
-- ✅ Time conflict detection for same doctor
-- ✅ Full CRUD operations (Create, Read, Update, Delete)
-- ✅ Duration field with validation
-- ✅ Tab navigation (All, Today, Upcoming, Past)
-- ✅ Backend documentation with production patterns
-- ✅ Real-time UI updates with Apollo cache
+---
 
-## 🏗️ Architecture
+## 🚀 Live Demo
 
-### Tech Stack
+**Frontend:** [https://swasthiq-emr-assignment.vercel.app/](https://swasthiq-emr-assignment.vercel.app/)
 
-**Backend:**
-- FastAPI 0.104+ - High-performance async Python framework
-- Strawberry GraphQL - Code-first GraphQL with Python type hints
-- Python 3.11+ - Latest stable Python
-- Uvicorn - ASGI server for production
+**Backend API:** [https://swasthiq-emr-assignment-production.up.railway.app/graphql](https://swasthiq-emr-assignment-production.up.railway.app/graphql)
 
-**Frontend:**
-- Next.js 16 - React framework with App Router and Turbopack
-- Apollo Client 3 - GraphQL client with intelligent caching
-- TypeScript 5 - Type-safe development
-- Tailwind CSS 3 - Utility-first CSS
+**GraphQL Playground:** [https://swasthiq-emr-assignment-production.up.railway.app/graphql](https://swasthiq-emr-assignment-production.up.railway.app/graphql)
 
-**Data Layer (Mock):**
-- In-memory Python dictionary simulating PostgreSQL Aurora
+---
 
-## 📊 GraphQL Schema Design
+## ✨ Features
 
-### Query Structure
+### 🎯 Core Functionality
+- **Complete CRUD Operations** - Create, Read, Update, Delete appointments
+- **Advanced Filtering** - Filter by date, doctor, status with real-time updates
+- **Global Search** - Lightning-fast search across patients and doctors
+- **Interactive Calendar** - Visual date selection with appointment highlighting
+- **Doctor Timeline View** - Day-view schedule visualization for doctors
+- **Time Conflict Detection** - Prevents double-booking automatically
+- **CSV Export** - Export appointment data for reporting
 
-The `appointments` query supports flexible filtering for efficient data retrieval:
+### 🎨 User Experience
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **Modern UI/UX** - Beautiful gradients, animations, and micro-interactions
+- **Real-time Updates** - Instant feedback on all operations
+- **Error Handling** - Comprehensive error messages and validation
+- **Loading States** - Smooth loading indicators and skeleton screens
 
-```
-query GetAppointments(
-  $date: String          # Filter: ISO date (YYYY-MM-DD)
-  $status: String        # Filter: Scheduled|Confirmed|Completed|Cancelled
-  $doctorName: String    # Filter: Exact doctor name match
-) {
-  appointments(date: $date, status: $status, doctorName: $doctorName) {
-    id
-    patientName
-    date
-    time
-    duration
-    doctorName
-    status
-    mode
-  }
-}
-```
+### 🔧 Technical Excellence
+- **Type-Safe** - Full TypeScript implementation across frontend and backend
+- **GraphQL API** - Efficient data fetching with precise queries
+- **Production Deployment** - Fully deployed on Vercel and Railway
+- **Code Quality** - Clean, maintainable, and well-documented code
+- **Performance Optimized** - Fast load times and smooth interactions
 
-**Design Rationale:**
-- Optional filters enable single endpoint for all list views
-- Reduces API calls - no need for separate endpoints
-- Server-side filtering reduces payload size
-- Type-safe with Strawberry's Python typing
+---
 
-### Mutation Structure
+## 🛠️ Tech Stack
 
-```
-mutation CreateAppointment($input: AppointmentInput!) {
-  createAppointment(input: $input) {
-    id
-    patientName
-    date
-    time
-    duration
-    doctorName
-    status
-    mode
-  }
-}
-```
+### Frontend
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** Apollo Client
+- **Animations:** Framer Motion
+- **Icons:** React Icons (Feather Icons)
+- **Data Fetching:** Apollo Client with GraphQL
 
-**Validation Rules:**
-1. All fields required except status (defaults to "Scheduled")
-2. Duration must be positive integer
-3. Time conflict check before insertion
-4. Unique ID generation on backend
+### Backend
+- **Framework:** FastAPI (Python)
+- **API:** GraphQL with Strawberry
+- **Server:** Uvicorn (ASGI)
+- **Data Validation:** Pydantic
+- **CORS:** FastAPI CORS Middleware
 
-## 🔒 Data Consistency Strategy
+### Deployment
+- **Frontend:** Vercel (Edge Network, CDN)
+- **Backend:** Railway (Container-based deployment)
+- **Version Control:** GitHub
 
-### Production Implementation (Aurora + AppSync)
+---
 
-#### 1. **Transaction Management**
-```
-# Pseudocode for Aurora transaction
-BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-  
-  # Check for conflicts with row-level locking
-  SELECT * FROM appointments 
-  WHERE doctor_name = ? AND date = ? AND time_range && ?
-  FOR UPDATE;
-  
-  # Insert if no conflicts
-  INSERT INTO appointments (...) VALUES (...);
-  
-COMMIT;
-```
-
-#### 2. **Unique Constraints**
-```
-CREATE UNIQUE INDEX idx_unique_appointment 
-ON appointments(doctor_name, date, time_range)
-WHERE deleted_at IS NULL;
-```
-
-#### 3. **Idempotency Keys**
-- Client generates unique request ID (UUID)
-- Backend stores completed mutations in idempotency table
-- Duplicate requests return cached result instead of re-executing
-- TTL: 24 hours
+## 📐 System Architecture
 
 ```
-idempotency_key = request.headers.get("Idempotency-Key")
-cached = redis.get(f"mutation:{idempotency_key}")
-if cached:
-    return cached  # Return previous result
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                          │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  Next.js 14 Frontend (Vercel Edge Network)           │  │
+│  │  - React Components with TypeScript                   │  │
+│  │  - Tailwind CSS for styling                          │  │
+│  │  - Apollo Client for GraphQL                         │  │
+│  │  - Framer Motion for animations                      │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │ HTTPS / GraphQL
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API GATEWAY LAYER                       │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  FastAPI + GraphQL (Railway)                         │  │
+│  │  - Strawberry GraphQL Schema                         │  │
+│  │  - Request Validation & Authentication               │  │
+│  │  - CORS Configuration                                │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     BUSINESS LOGIC LAYER                     │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  GraphQL Resolvers                                    │  │
+│  │  - Query: appointments, appointment                   │  │
+│  │  - Mutation: create, update, delete                  │  │
+│  │  - Time Conflict Detection Algorithm                 │  │
+│  │  - Data Validation Logic                             │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                             │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  In-Memory Data Store (Mock Database)                │  │
+│  │  - Simulates Aurora PostgreSQL                       │  │
+│  │  - 13 Sample Appointments                            │  │
+│  │  - Production: Would use AWS Aurora PostgreSQL       │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-#### 4. **Optimistic Locking**
-```
-# Version-based concurrency control
-UPDATE appointments 
-SET status = ?, version = version + 1
-WHERE id = ? AND version = ?;
+---
 
-if affected_rows == 0:
-    raise ConcurrencyError("Appointment was modified")
-```
-
-#### 5. **AppSync Real-time Subscriptions**
-
-When mutations occur, AppSync publishes to subscribed clients:
-
-```
-subscription OnAppointmentChange {
-  onCreateAppointment {
-    id
-    patientName
-    status
-  }
-  onUpdateAppointment {
-    id
-    status
-  }
-  onDeleteAppointment {
-    id
-  }
-}
-```
-
-**Flow:**
-1. Client submits mutation → AppSync resolver
-2. Lambda/Backend processes with transaction
-3. On success, AppSync triggers subscription
-4. All connected clients receive real-time update
-5. Apollo cache automatically updates UI
-
-#### 6. **Conflict Resolution**
-
-**Time Overlap Detection Algorithm:**
-```
-# Two appointments overlap if:
-# (StartA < EndB) AND (EndA > StartB)
-
-new_start = parse_time(time)
-new_end = new_start + timedelta(minutes=duration)
-
-for existing in db_appointments:
-    existing_start = parse_time(existing.time)
-    existing_end = existing_start + timedelta(minutes=existing.duration)
-    
-    if (new_start < existing_end) and (new_end > existing_start):
-        raise ConflictError("Time slot unavailable")
-```
-
-#### 7. **Audit Trail**
-```
-CREATE TABLE appointment_audit (
-    id UUID PRIMARY KEY,
-    appointment_id UUID,
-    action VARCHAR(10),  -- CREATE|UPDATE|DELETE
-    old_data JSONB,
-    new_data JSONB,
-    user_id UUID,
-    timestamp TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-## 📁 Project Structure
+## 🗂️ Project Structure
 
 ```
 swasthiq-emr-assignment/
-├── backend/
-│   ├── main.py                 # FastAPI + GraphQL server
-│   │   ├── Mock data (12 appointments)
-│   │   ├── Query resolvers with filtering
-│   │   ├── Mutation resolvers with validation
-│   │   ├── Time conflict detection
-│   │   └── Production comments (AppSync/Aurora)
-│   ├── requirements.txt        # Python dependencies
-│   └── venv/                   # Virtual environment
+├── frontend/                    # Next.js Frontend Application
+│   ├── app/
+│   │   ├── appointments/       # Appointments pages
+│   │   │   ├── [id]/edit/     # Edit appointment page
+│   │   │   ├── new/           # Create appointment page
+│   │   │   └── page.tsx       # Main appointments dashboard
+│   │   ├── landing/           # Landing page
+│   │   ├── layout.tsx         # Root layout
+│   │   ├── page.tsx          # Home page (redirects)
+│   │   ├── globals.css       # Global styles
+│   │   ├── calendar.css      # Calendar-specific styles
+│   │   └── ApolloWrapper.tsx # Apollo Client provider
+│   ├── components/
+│   │   ├── Calendar.tsx      # Interactive calendar widget
+│   │   └── DoctorTimeline.tsx # Doctor schedule timeline
+│   ├── lib/
+│   │   ├── graphql/
+│   │   │   ├── client.ts     # Apollo Client configuration
+│   │   │   └── operations.ts # GraphQL queries/mutations
+│   │   └── types.ts          # TypeScript type definitions
+│   ├── public/               # Static assets
+│   ├── .env.local           # Environment variables (not in git)
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── tailwind.config.ts
 │
-└── frontend/
-    ├── app/
-    │   ├── page.tsx            # Appointments list with tabs & filters
-    │   ├── layout.tsx          # Root layout with Apollo Provider
-    │   ├── ApolloWrapper.tsx   # Client-side Apollo wrapper
-    │   └── appointments/
-    │       ├── new/
-    │       │   └── page.tsx    # Create form with validation
-    │       └── [id]/
-    │           └── edit/
-    │               └── page.tsx # Edit form with delete
-    │
-    ├── lib/
-    │   ├── graphql/
-    │   │   ├── client.ts       # Apollo Client configuration
-    │   │   └── operations.ts   # GraphQL queries & mutations
-    │   └── types.ts            # TypeScript interfaces
-    │
-    ├── components/             # Reusable components (future)
-    ├── .env.local              # Environment variables
-    └── package.json
+├── backend/                     # FastAPI Backend Application
+│   ├── main.py                 # Main FastAPI application
+│   ├── requirements.txt        # Python dependencies
+│   └── runtime.txt            # Python version specification
+│
+├── .gitignore
+└── README.md                   # This file
 ```
 
-## 🚀 Installation & Setup
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- npm/yarn
+- **Node.js** 18+ and npm/yarn
+- **Python** 3.11+
+- **Git**
 
-### Backend Setup
+### 1. Clone the Repository
+```
+git clone https://github.com/Yashwanth2408/swasthiq-emr-assignment.git
+cd swasthiq-emr-assignment
+```
+
+### 2. Backend Setup
 
 ```
+# Navigate to backend directory
 cd backend
-python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows
-source venv/bin/activate      # Mac/Linux
 
+# Install dependencies
 pip install -r requirements.txt
-uvicorn main:app --reload
+
+# Run the development server
+uvicorn main:app --reload --port 8000
 ```
 
-Backend: `http://localhost:8000`  
+Backend will be available at: `http://localhost:8000`  
 GraphQL Playground: `http://localhost:8000/graphql`
 
-### Frontend Setup
+### 3. Frontend Setup
 
 ```
+# Navigate to frontend directory
 cd frontend
+
+# Install dependencies
 npm install
+# or
+yarn install
+
+# Create environment file
+cp .env.example .env.local
+
+# Update .env.local with your backend URL
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:8000/graphql
+
+# Run the development server
 npm run dev
+# or
+yarn dev
 ```
 
-Frontend: `http://localhost:3000`
+Frontend will be available at: `http://localhost:3000`
 
-## 🧪 Testing
+---
 
-### Test Time Conflict Detection
+## 📡 API Documentation
 
-**Scenario 1: Create successful appointment**
-- Doctor: Dr. Sarah Johnson
-- Date: 2025-12-29
-- Time: 12:00
-- Duration: 30 min
-- ✅ Should succeed (no conflict)
+### GraphQL Endpoints
 
-**Scenario 2: Create conflicting appointment**
-- Doctor: Dr. Sarah Johnson
-- Date: 2025-12-29
-- Time: 09:15
-- Duration: 30 min
-- ❌ Should fail with error: "Time conflict: Dr. Sarah Johnson already has an appointment at 09:15"
+#### Queries
 
-### Test Filtering
-
-1. **Filter by Date**: Select 2025-12-29 → Shows 4 appointments
-2. **Filter by Status**: Select "Completed" → Shows completed only
-3. **Filter by Doctor**: Select "Dr. Sarah Johnson" → Shows her appointments
-4. **Combined Filters**: Date + Status + Doctor
-
-### Test Tabs
-
-- **All**: Shows all 12 appointments
-- **Today**: Shows appointments for 2025-12-29
-- **Upcoming**: Shows future appointments
-- **Past**: Shows appointments before today
-
-## 🎨 Features
-
-### Backend Features
-- GraphQL API with filtering
-- Time conflict detection
-- Duration-based scheduling
-- Comprehensive error handling
-- Production-ready comments
-
-### Frontend Features
-- Responsive table layout
-- Tab-based navigation
-- Multi-filter search
-- Color-coded status badges
-- Real-time cache updates
-- Loading states
-- Error boundaries
-
-## 📝 API Examples
-
-### Create Appointment
+**Get All Appointments**
 ```
-mutation {
-  createAppointment(input: {
-    patientName: "John Smith"
-    date: "2025-12-30"
-    time: "14:00"
-    duration: 45
-    doctorName: "Dr. Sarah Johnson"
-    status: "Scheduled"
-    mode: "Video"
-  }) {
+query {
+  appointments(
+    date: "2025-12-29"        # Optional: filter by date
+    status: "Scheduled"       # Optional: filter by status
+    doctorName: "Dr. Sarah Johnson"  # Optional: filter by doctor
+  ) {
     id
     patientName
+    date
+    time
+    duration
+    doctorName
+    status
+    mode
   }
 }
 ```
 
-### Filter Appointments
+**Get Single Appointment**
 ```
 query {
-  appointments(
-    date: "2025-12-29"
-    status: "Confirmed"
+  appointment(id: "1") {
+    id
+    patientName
+    date
+    time
+    duration
+    doctorName
+    status
+    mode
+  }
+}
+```
+
+#### Mutations
+
+**Create Appointment**
+```
+mutation {
+  createAppointment(
+    input: {
+      patientName: "John Doe"
+      date: "2025-12-30"
+      time: "10:00"
+      duration: 30
+      doctorName: "Dr. Sarah Johnson"
+      status: "Scheduled"
+      mode: "In-person"
+    }
   ) {
     id
     patientName
+    date
     time
   }
 }
 ```
 
-## 🔐 Environment Variables
-
-Create `.env.local` in frontend:
+**Update Appointment**
 ```
-NEXT_PUBLIC_GRAPHQL_URL=http://localhost:8000/graphql
+mutation {
+  updateAppointment(
+    id: "1"
+    input: {
+      patientName: "John Doe Updated"
+      date: "2025-12-30"
+      time: "11:00"
+      duration: 45
+      doctorName: "Dr. Sarah Johnson"
+      status: "Confirmed"
+      mode: "Video"
+    }
+  ) {
+    id
+    patientName
+    status
+  }
+}
 ```
 
-## 🚢 Deployment
-
-### Backend (Railway/Render)
+**Delete Appointment**
 ```
-# Install production dependencies
-pip install -r requirements.txt
-
-# Run with Gunicorn
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+mutation {
+  deleteAppointment(id: "1") {
+    success
+    message
+  }
+}
 ```
+
+---
+
+## 🔥 Key Features in Detail
+
+### 1. Time Conflict Detection
+
+The system automatically prevents double-booking by checking for time overlaps:
+
+```
+def check_time_conflict(doctor_name: str, date: str, time: str, duration: int):
+    """
+    Checks if new appointment conflicts with existing ones
+    Algorithm: (StartA < EndB) AND (EndA > StartB)
+    """
+    # Returns True if conflict exists
+```
+
+**Example:**
+- Existing: Dr. Sarah Johnson, 10:00-10:30
+- New: Dr. Sarah Johnson, 10:15-10:45
+- Result: ❌ Conflict detected, appointment blocked
+
+### 2. Advanced Filtering
+
+Multiple filters can be combined:
+- **By Date** - Show appointments for specific day
+- **By Status** - Scheduled, Confirmed, Completed, Cancelled
+- **By Doctor** - View specific doctor's appointments
+- **Search** - Real-time search across patients and doctors
+
+### 3. Doctor Timeline View
+
+Visual representation of doctor's daily schedule:
+- Hourly timeline (8 AM - 8 PM)
+- Color-coded appointment blocks
+- Shows appointment duration visually
+- Easy identification of free slots
+
+---
+
+## 🎨 UI Screenshots
+
+### Landing Page
+![Landing Page](./screenshots/landing.png)
+
+### Dashboard
+![Dashboard](./screenshots/dashboard.png)
+
+### Create Appointment
+![Create Appointment](./screenshots/create-appointment.png)
+
+### Doctor Timeline
+![Doctor Timeline](./screenshots/timeline.png)
+
+---
+
+## 🧪 Testing
+
+### Test Accounts
+The system comes pre-loaded with 13 sample appointments featuring:
+- 5 doctors
+- Various appointment types (In-person, Video, Phone)
+- Different statuses and dates
+
+### Manual Testing Checklist
+- ✅ Create new appointment
+- ✅ View all appointments
+- ✅ Filter by date, status, doctor
+- ✅ Search functionality
+- ✅ Edit existing appointment
+- ✅ Delete appointment
+- ✅ Time conflict detection
+- ✅ Calendar date selection
+- ✅ Doctor timeline view
+- ✅ Export to CSV
+
+---
+
+## 🚀 Deployment
 
 ### Frontend (Vercel)
 ```
-npm run build
-npm start
+# Automatic deployment on push to main branch
+# Environment variables required:
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://your-backend-url.railway.app/graphql
 ```
 
-## 📊 Performance Optimizations
+### Backend (Railway)
+```
+# Automatic deployment on push to main branch
+# Root Directory: backend
+# Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
+# Environment variables:
+ENVIRONMENT=production
+```
 
-1. **Apollo Cache** - Reduces redundant API calls
-2. **Tab Filtering** - Client-side for instant switching
-3. **Optimistic Updates** - Immediate UI feedback
-4. **Lazy Loading** - Code splitting with Next.js
-5. **Memoization** - useMemo for filtered data
+---
 
-## 👨‍💻 Author
+## 🔮 Future Enhancements
 
-**Yash**  
-Full Stack Developer | AI/ML Engineer  
-Final Year ECE Student
+### Phase 1 (Immediate)
+- [ ] User authentication and authorization
+- [ ] Email notifications for appointments
+- [ ] SMS reminders
+- [ ] Patient and doctor profiles
+- [ ] Medical history tracking
+
+### Phase 2 (Short-term)
+- [ ] PostgreSQL database integration
+- [ ] Real-time updates with GraphQL subscriptions
+- [ ] Multi-clinic support
+- [ ] Advanced analytics dashboard
+- [ ] Appointment recurring patterns
+
+### Phase 3 (Long-term)
+- [ ] Telemedicine integration
+- [ ] Payment processing
+- [ ] Insurance claim management
+- [ ] Prescription management
+- [ ] Lab test integration
+
+---
+
+## 📝 Design Decisions
+
+### Why GraphQL?
+- **Efficient Data Fetching** - Request exactly what you need
+- **Type Safety** - Schema-driven development
+- **Single Endpoint** - Simplifies API management
+- **Real-time Capable** - Easy to add subscriptions
+
+### Why Next.js 14?
+- **App Router** - Modern routing with layouts
+- **Server Components** - Better performance
+- **Built-in Optimization** - Image, font, script optimization
+- **TypeScript Support** - First-class TypeScript experience
+
+### Why FastAPI?
+- **Fast Performance** - Async/await support
+- **Automatic Docs** - Interactive API documentation
+- **Type Hints** - Python type checking
+- **Easy GraphQL Integration** - Strawberry library
+
+---
+
+## 🤝 Contributing
+
+This is a hiring assignment project. For the production version, contributions would be welcome via:
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+---
 
 ## 📄 License
 
-Assignment project for SwasthiQ EMR - SDE Intern Role
+This project is created as part of SwasthiQ hiring assignment.
+
+---
+
+## 👨‍💻 Author
+
+**Yashwanth**
+
+- GitHub: [@Yashwanth2408](https://github.com/Yashwanth2408)
+- LinkedIn: [Add your LinkedIn]
+- Email: [Add your email]
+
+---
+
+## 🙏 Acknowledgments
+
+- **SwasthiQ** for the assignment opportunity
+- **Next.js** team for the amazing framework
+- **FastAPI** and **Strawberry** communities
+- **Vercel** and **Railway** for free hosting
+
+---
+
+## 📊 Project Stats
+
+- **Development Time:** 8-10 hours
+- **Lines of Code:** ~3000+
+- **Components:** 15+
+- **API Endpoints:** 5 GraphQL operations
+- **Test Coverage:** Coming soon
+
+---
+
+<div align="center">
+
+### ⭐ Star this repository if you found it helpful!
+
+**Made with ❤️ for SwasthiQ**
+
+</div>
