@@ -1,0 +1,81 @@
+/* Custom Calendar Styles */
+.react-calendar {
+    border: none !important;
+    font-family: inherit;
+    width: 100%;
+}
+
+.react-calendar__tile {
+    padding: 12px 6px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+/* Regular dates - darker and clearer */
+.react-calendar__month-view__days__day {
+    color: #1f2937 !important;
+    font-weight: 500;
+}
+
+/* Dates outside current month - still visible but lighter */
+.react-calendar__month-view__days__day--neighboringMonth {
+    color: #9ca3af !important;
+    font-weight: 400;
+}
+
+/* Weekend dates - red but still readable */
+.react-calendar__month-view__days__day--weekend {
+    color: #dc2626 !important;
+    font-weight: 600;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+}
+
+/* Selected date - blue */
+.react-calendar__tile--active {
+    background: #2563eb !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+/* Today's date - light grey background */
+.react-calendar__tile--now {
+    background: #f3f4f6 !important;
+    font-weight: 700;
+}
+
+/* Today's date when selected */
+.react-calendar__tile--now.react-calendar__tile--active {
+    background: #2563eb !important;
+    color: white !important;
+}
+
+.react-calendar__navigation button {
+    font-size: 16px;
+    font-weight: 600;
+    min-width: 44px;
+    color: #1f2937;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.react-calendar__month-view__weekdays {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #6b7280;
+    padding: 8px 0;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+    padding: 8px;
+}
