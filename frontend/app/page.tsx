@@ -17,7 +17,8 @@ import {
   FiCheckCircle,
   FiEdit3,
   FiFilter,
-  FiX
+  FiX,
+  FiBarChart2
 } from "react-icons/fi";
 import { GET_APPOINTMENTS } from "@/lib/graphql/operations";
 import { Appointment } from "@/lib/types";
@@ -170,6 +171,15 @@ export default function AppointmentsPage() {
                 <FiPlus className="text-lg" />
                 New Appointment
               </Link>
+              <Link
+                href="/analytics"
+                className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center gap-2 shadow-lg shadow-purple-600/30"
+              >
+                <FiBarChart2 />
+                Analytics
+              </Link>
+
+
             </motion.nav>
           </div>
         </div>
