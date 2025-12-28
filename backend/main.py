@@ -385,24 +385,18 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else []
 
 # CORS configuration for production deployment
-if ENVIRONMENT == "production":
-    # In production, use specific origins from environment variable
-    cors_origins = ALLOWED_ORIGINS if ALLOWED_ORIGINS else ["*"]
-else:
-    # In development, allow localhost
-    cors_origins = [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-    ]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For now, allow all. We'll update after frontend deployment
+    allow_origins=[
+        "http://localhost:3000",
+        "https://swasthiq-emr-assignment.vercel.app",
+        "https://swasthiq-emr-assignment-production.up.railway.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Include GraphQL router
 app.include_router(graphql_app, prefix="/graphql")
