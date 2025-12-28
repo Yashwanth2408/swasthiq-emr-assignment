@@ -587,9 +587,9 @@ Looking forward to discussing the technical implementation and exploring how I c
 
 **Yashwanth**  
 - **GitHub:** [@Yashwanth2408](https://github.com/Yashwanth2408)
-- **Email:** [Your email]
-- **LinkedIn:** [Your LinkedIn]
-- **Location:** Narnaund, Haryana, India
+- **Email:** yashwanthbalaji.2408@gmail.com
+- **LinkedIn:** [@YashwanthBalaji](https://www.linkedin.com/in/yashwanthbalaji)
+- **Location:** Chennai, India
 
 ---
 
