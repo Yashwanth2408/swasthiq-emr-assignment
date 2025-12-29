@@ -1,4 +1,4 @@
-﻿# 🏥 SwasthiQ EMR - Healthcare Appointment Management System
+﻿#  SwasthiQ EMR - Healthcare Appointment Management System
 
 > A modern, production-ready Electronic Medical Records (EMR) system built with Next.js 14, FastAPI, GraphQL, and TypeScript.
 
