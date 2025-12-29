@@ -98,7 +98,7 @@ export default function EditAppointmentPage() {
             await updateAppointment({
                 variables: { id, input: { ...formData, duration: Number(formData.duration) } },
             });
-            router.push("/appointments");
+            router.push("/");
         } catch (err) {
             console.error("Error updating appointment:", err);
         }
@@ -108,7 +108,7 @@ export default function EditAppointmentPage() {
         if (confirm("Are you sure you want to delete this appointment?")) {
             try {
                 await deleteAppointment({ variables: { id } });
-                router.push("/appointments");
+                router.push("/");
             } catch (err) {
                 console.error("Error deleting appointment:", err);
             }
@@ -151,7 +151,7 @@ export default function EditAppointmentPage() {
                             className="flex gap-3"
                         >
                             <Link
-                                href="/appointments"
+                                href="/"
                                 className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-all duration-200 flex items-center gap-2"
                             >
                                 <FiArrowLeft />
@@ -399,7 +399,7 @@ export default function EditAppointmentPage() {
                                 )}
                             </button>
                             <Link
-                                href="/appointments"
+                                href="/"
                                 className="px-8 py-4 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 font-semibold transition-all duration-200 text-lg flex items-center justify-center"
                             >
                                 Cancel
